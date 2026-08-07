@@ -1,0 +1,4 @@
+<!-- preserveAspectRatio="none": 背景として文字幅いっぱいに伸ばすため、縦横比を保たせない -->
+<svg width="490" height="25" viewBox="0 0 490 25" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.822144 16.4925C127.322 3.42237 205.822 13.8981 307.322 16.4925C408.822 19.0869 488.322 7.92236 488.322 7.92236" stroke="#FFE26C" stroke-width="16"/>
+</svg>

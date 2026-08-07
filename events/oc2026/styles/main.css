@@ -1,0 +1,912 @@
+:root {
+    --c-background: #ffffff;
+    --c-card-background: var(--c-background);
+    --c-card-background-transparent: var(--c-card-background);
+    --card-title-icon-background: var(--c-card-background);
+
+    --c-text: #000000;
+    --c-text-thin: #333333;
+    --c-text-light: #666666;
+    --c-text-lighter: #999999;
+    --c-text-lightest: #cccccc;
+
+    --c-primary: #007A88;
+    --c-primary-color: var(--c-primary);
+    --c-primary-thin: #007A8880;
+    --c-primary-light: #007A8820;
+    --c-primary-text: #ffffff;
+
+    --c-secondary: #FFE26C;
+    --c-secondary-color: var(--c-secondary);
+    --c-secondary-thin: #FFE26C80;
+    --c-secondary-light: #FFE26C20;
+    --c-secondary-text: #000000;
+
+    --c-shadow: var(--c-secondary);
+
+    --e-shadow: 0.1rem 0.1rem 0rem var(--c-shadow);
+    --e-shadow-hover: 0.1rem 0.2rem 0rem var(--c-shadow);
+}
+
+/* 各セクションが自前で余白を持っているので、本体の main の余白は消す。
+   背景を敷いているのは、中身が画面より短いとき main が min-height: 100vh ぶん
+   引き伸ばされ、その余白に body のティールがフッターの上に帯として覗くため。
+   最後のセクションが白なので白で埋める */
+main {
+    padding: 0;
+    margin-top: 2rem;
+    background: var(--c-background);
+}
+
+/* 本体の main section には上下 2rem の余白が付くが、
+   このページはセクションごとに自前で余白と背景を持つので消す。
+   残すとセクションの継ぎ目に main の背景が帯として覗く */
+main section {
+    margin: 0;
+}
+
+body {
+    background: var(--c-primary);
+    /* .full-bleed の 100vw はスクロールバーのぶん横に溢れるので、その分を切る */
+    overflow-x: clip;
+}
+
+/* 本体の main が max-width: 90rem + padding で囲っているので、
+   背景を画面幅いっぱいに出したいセクションはこれで外へ逃がす。
+   中身の幅は各セクションの内側で max-width をかけて揃える */
+.full-bleed {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+}
+
+header {
+    /* デザインの基準単位。1600px以上では拡大を止める */
+    --u: min(1vw, 16px);
+
+    /* headerの高さ */
+    --h: calc(39 * var(--u));
+    /* headerの下端から弧の頂点までの高さ。弧の深さはこれで決まる */
+    --arc-rise: calc(20 * var(--u));
+    /* 弧の半径。下端の左右の角にちょうど届く値を scripts/hero.js が入れる。
+       ここの値はJSが動かないときの保険 */
+    --arc-r: calc(73 * var(--u));
+
+    /* 問いかけを並べる円。半径と頂点の高さに同じ --q-gap を足すと
+       弧と中心が一致し、どこでも弧から等距離になる。
+       半径だけ縮めると中心がズレて、頂点は離れ端は接する形になるので触らない。
+       間隔を変えたいときは --q-gap だけ動かす */
+    --q-gap: calc(3 * var(--u));
+    --q-r: calc(var(--arc-r) + var(--q-gap));
+    --q-rise: calc(var(--arc-rise) + var(--q-gap));
+    /* 外側の行を何段上げるか＝2行の間隔。
+       文字が 1.55u なので、2.6u より詰めると左右の端で行が接近しすぎる */
+    --q-row: calc(3.2 * var(--u));
+    /* 問いかけの文字。--q-r と揃っていないと文字送りが合わないので変数にしておく */
+    --q-font: calc(1.55 * var(--u));
+
+    /* 弧の縁からタイトルまで空けるすきま */
+    --t-inset: calc(1.5 * var(--u));
+    /* 弧の内側のタイトル。問いかけと同じく、半径と頂点の高さから同じ量を引くと
+       弧と中心が一致する。引く量は「縁からのすきま + 文字の高さ」。
+       文字が弧の縁と平行に並び、はみ出す設定にしても scripts/hero.js が
+       --t-font を詰めて収める。
+       --t-band は文字の高さの基準。--t-font はJSが縮めるので、
+       半径の計算にはこちらを使う（使うと縮めるたびに半径が動いてしまう） */
+    --t-band: calc(7 * var(--u));
+    --t-r: calc(var(--arc-r) - var(--t-inset) - var(--t-band));
+    /* headerの下端からタイトルの頂点（文字の下端）まで */
+    --t-rise: calc(var(--arc-rise) - var(--t-inset) - var(--t-band));
+    --t-font: var(--t-band);
+    --t-spacing: 0.02em;
+    /* タイトルの最大幅。これを超えないよう scripts/hero.js が --t-font を詰める */
+    --t-max: 64rem;
+    --t-sub-font: calc(0.6 * var(--t-font));
+    --t-sub-rise: calc(2.5 * var(--u));
+
+    /* 繰り返しの角度周期と1周にかかる時間。
+       どちらも実測値から scripts/hero.js が上書きする。ここの値はJSが動かないときの保険 */
+    --q-step: 116deg;
+    --q-duration: 105s;
+
+    position: relative;
+    display: block;
+    min-height: var(--h);
+    padding: 0;
+    overflow: hidden;
+    background: var(--c-background);
+}
+
+/* ロゴは常に左上固定。画面幅で伸縮させない */
+header img.logo {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 3;
+    width: auto;
+    height: 2.5rem;
+    max-height: none;
+    border-radius: 0;
+}
+
+.hero {
+    position: relative;
+    height: var(--h);
+}
+
+/* 弧：巨大な円を下からせり上がらせる。
+   --arc-r はJSが画面幅に合わせて入れるので普段は真円のまま。
+   102vw の指定はJSが動かないときに角が白く欠けないための保険 */
+.hero-arc {
+    position: absolute;
+    bottom: calc(var(--arc-rise) - 2 * var(--arc-r));
+    left: 50%;
+    z-index: 1;
+    width: max(calc(2 * var(--arc-r)), 102vw);
+    height: calc(2 * var(--arc-r));
+    background: var(--c-primary);
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+
+/* リング：原点を円の中心に置いて、これ自体を回す。
+   ちょうど --q-step だけ回して戻すので、継ぎ目なくループする */
+.hero-ring {
+    position: absolute;
+    bottom: calc(var(--q-rise) - var(--q-r));
+    /* = 円の中心 */
+    left: 50%;
+    z-index: 0;
+    width: 0;
+    height: 0;
+    transform-origin: 0 0;
+    animation: hero-ring-spin var(--q-duration) linear infinite;
+    will-change: transform;
+}
+
+@keyframes hero-ring-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(calc(-1 * var(--q-step)));
+    }
+}
+
+/* 同じ中身のブロックを --q-step 間隔で並べる */
+.hero-ring-block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    transform-origin: 0 0;
+    transform: rotate(calc(var(--k) * var(--q-step)));
+}
+
+/* 問いかけの1文字：回転 → 半径ぶん外へ移動 → 文字の中心を合わせる。
+   --a を1文字ずつずらしていくので、文章そのものが弧に沿って曲がる */
+.hero-q {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    font-size: var(--q-font);
+    line-height: 1;
+    color: var(--c-primary);
+    white-space: pre;
+    transform-origin: 0 0;
+    transform: rotate(var(--a)) translateY(calc(-1 * var(--q-r))) translate(-50%, -100%);
+}
+
+/* 外側の行。行の間隔は半径の倍率ではなく絶対量で持たせる */
+.hero-q--out {
+    transform: rotate(var(--a)) translateY(calc(-1 * var(--q-r) - var(--q-row))) translate(-50%, -100%);
+}
+
+/* --q-r などはcalc式のままなので、JSから実際の長さを測るための当て木 */
+.hero-probe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.hero-probe i {
+    display: inline-block;
+    font-style: normal;
+}
+
+.hero-probe-r {
+    width: var(--q-r);
+}
+
+.hero-probe-row {
+    width: var(--q-row);
+}
+
+.hero-probe-text {
+    font-size: var(--q-font);
+    letter-spacing: 0.08em;
+}
+
+.hero-probe-tr {
+    width: var(--t-r);
+}
+
+.hero-probe-t-rise {
+    width: var(--t-rise);
+}
+
+.hero-probe-arc-r {
+    width: var(--arc-r);
+}
+
+.hero-probe-arc-rise {
+    width: var(--arc-rise);
+}
+
+.hero-probe-inset {
+    width: var(--t-inset);
+}
+
+.hero-probe-t-max {
+    width: var(--t-max);
+}
+
+.hero-probe-title {
+    font-size: var(--t-font);
+    font-weight: 700;
+    letter-spacing: var(--t-spacing);
+}
+
+/* 弧の内側のタイトル。
+   問いかけと同じく1文字ずつ角度を振って曲げる。円の中心は弧と同じ */
+.hero-title {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    margin: 0;
+    color: var(--c-primary-text);
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* 曲がる部分の原点＝タイトルの円の中心 */
+.hero-title-arc {
+    position: absolute;
+    bottom: calc(var(--t-rise) - var(--t-r));
+    left: 50%;
+    display: block;
+    width: 0;
+    height: 0;
+}
+
+.hero-title-char {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    font-size: var(--t-font);
+    white-space: pre;
+    transform-origin: 0 0;
+    transform: rotate(var(--a)) translateY(calc(-1 * var(--t-r))) translate(-50%, -100%);
+}
+
+.hero-title-sub {
+    position: absolute;
+    bottom: var(--t-sub-rise);
+    left: 50%;
+    display: block;
+    font-size: var(--t-sub-font);
+    letter-spacing: 0.04em;
+    white-space: pre;
+    transform: translateX(calc(-50% + 0.02em));
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* 本体の main ul li に付く菱形マーカーと字下げは、このページでは使わない。
+   footer は main の外なので、本体の list-style-type: none も届かない。
+   ここで一緒に消しておく */
+main ul,
+footer ul {
+    list-style: none;
+}
+
+main ul li,
+footer ul li {
+    padding-left: 0;
+}
+
+main ul li::before,
+footer ul li::before {
+    display: none;
+}
+
+/* ===== 紹介カード =====
+   構造は本体の .cards / .card / .card-title / .card-content をそのまま使い、
+   このページの見た目（弧に続く背景・黄色のずれ影・線アイコン）だけ上書きする */
+/* headerの弧のティールをそのまま下まで続ける。
+   写真の帯を白地にしたいときは #photos をこの指定から外す */
+#photos,
+#intro {
+    background: var(--c-primary);
+}
+
+#intro {
+    padding: 4rem 1.5rem;
+}
+
+#intro .cards {
+    max-width: 64rem;
+    margin: 0 auto;
+    gap: 1.5rem;
+    /* 2枚が横に並ぶ幅を確保しつつ、入らなければ縦積み */
+    grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
+}
+
+#intro .card {
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    box-shadow: 0.5rem 0.5rem 0 var(--c-secondary);
+}
+
+#intro .card .card-title {
+    gap: 0.75rem;
+    margin: 0;
+}
+
+/* 本体のアイコンは色付きの四角だが、ここでは Material Symbols をそのまま置く */
+#intro .card .card-title .card-title-icon {
+    width: 2rem;
+    height: 2rem;
+    background: none;
+    border-radius: 0;
+    color: var(--c-text);
+}
+
+#intro .card .card-title .card-title-icon .material-symbols-outlined {
+    font-size: 2rem;
+}
+
+#intro .card .card-title .card-title-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+#intro .card .card-content p {
+    margin: 0;
+}
+
+/* 発想力・行動力・思いやりの気持ち */
+.point-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+}
+
+.point-list li {
+    color: var(--c-primary);
+}
+
+.point-list .material-symbols-outlined {
+    font-size: 3rem;
+}
+
+.point-list span {
+    display: block;
+    margin-top: 0.25rem;
+    font-weight: 700;
+}
+
+/* 活動の箇条書き */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+}
+
+.activity-name {
+    /* 「…などなど！」を同じ行の右端に置くため */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.activity-desc {
+    margin: 0.25rem 0 0;
+    padding-left: 0.5rem;
+}
+
+/* Mission / Vision / Value と顧問。
+   「見出し＋中身」の組が縦に並ぶ形は共通なので同じ骨組みを使う */
+.mvv,
+.staff {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.mvv dt {
+    font-weight: 700;
+}
+
+.mvv dt {
+    font-size: 0.875rem;
+    color: var(--c-primary);
+    letter-spacing: 0.08em;
+}
+
+.mvv dd,
+.staff dd {
+    margin: 0;
+}
+
+.mvv dd {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* 顧問は「ラベル: 名前」を横に並べる */
+.staff {
+    gap: 0.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--c-text-lightest);
+}
+
+.staff>div {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.staff dt {
+    flex: 0 0 5rem;
+    color: var(--c-text-light);
+}
+
+/* Value の手段のように、短い語句を並べるとき */
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.tag-list li {
+    padding: 0.5rem 1rem;
+    background: var(--c-primary-light);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--c-primary);
+}
+
+.member-total {
+    font-size: 1.25rem;
+}
+
+.member-total strong {
+    margin-right: 0.125rem;
+    font-size: 2rem;
+    color: var(--c-primary);
+}
+
+.grade-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.grade-list li {
+    padding: 0.5rem 0.25rem;
+    background: var(--c-primary-light);
+    border-radius: 0.5rem;
+}
+
+.grade-name {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--c-text-light);
+}
+
+.grade-count {
+    display: block;
+    font-weight: 700;
+    color: var(--c-primary);
+}
+
+@media (max-width: 767px) {
+    header {
+        /* スマホでは基準単位を上げて文字が潰れないようにする。
+           --q-font はここで上げると文字列が円周に収まらなくなるので触らない */
+        --u: 2.2vw;
+        /* 縦は詰める。基準単位そのままだと余白だらけになる。
+           弧は下端の左右の角に届く半径をJSが入れるので、--arc-rise を下げるほど
+           半径が大きく＝傾斜がゆるくなる。ただし弧が浅くなるぶん内側が狭くなるので、
+           タイトル(--t-band)と「ってなに？」(--t-sub-rise)も一緒に詰める */
+        --h: calc(30 * var(--u));
+        --arc-rise: calc(11 * var(--u));
+        /* タイトルの下に余白を残すぶん、文字は少し小さめにする */
+        --t-sub-rise: calc(2.2 * var(--u));
+        --t-band: calc(3.5 * var(--u));
+    }
+
+    header img.logo {
+        top: 1rem;
+        left: 1rem;
+        height: 1.75rem;
+    }
+
+    /* タイトルの寸法は全部 --u 基準なので、スマホ用の指定は要らない */
+
+    /* 対象・場所・日時は横並びだと折り返して読みにくいので縦積みにする */
+    .workshop-info>div {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .workshop-info dt {
+        width: auto;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0.25rem 1.25rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-ring {
+        animation: none;
+    }
+}
+
+#photos {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+}
+
+@media (max-width: 64rem) {
+    #photos {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+#photos img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2/1;
+    object-fit: cover;
+    border-radius: 0;
+}
+/* ===== よくある質問 ===== */
+#faq {
+    padding: 0 1.5rem 4rem;
+    background: var(--c-primary);
+}
+
+.section-title {
+    max-width: 64rem;
+    margin: 0 auto 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--c-primary-text);
+    text-align: center;
+}
+
+.faq-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
+    gap: 1.5rem;
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+/* カードと同じ見た目。中身が短いので余白は少し詰める */
+.faq-item {
+    padding: 1.25rem 1.5rem;
+    background: var(--c-card-background);
+    border-radius: 1.25rem;
+    box-shadow: 0.5rem 0.5rem 0 var(--c-secondary);
+}
+
+.faq-item dt {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--c-primary);
+}
+
+.faq-item dd {
+    margin: 0;
+}
+
+/* ===== ワークショップの案内 ===== */
+#workshop {
+    padding: 3rem 1.5rem;
+    background: var(--c-background);
+}
+
+.workshop-inner {
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+/* 見出しの黄色いラインは背景画像。
+   box-decoration-break で、折り返しても行ごとに線が入る */
+.workshop-title {
+    margin: 0 0 1.5rem;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: var(--c-primary);
+}
+
+.workshop-title span {
+    background-image: url("../images/highlight.svg");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    /* 幅は文字いっぱいに、高さは線の太さとして指定する */
+    background-size: 100% 0.4em;
+    padding-bottom: 0.15em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+#workshop p {
+    margin: 0 0 0.25rem;
+}
+
+/* 対象・場所・日時。ラベルは幅を揃えて縦のラインを通す */
+.workshop-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 2rem 0 0;
+}
+
+.workshop-info>div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+}
+
+.workshop-info dt {
+    flex: 0 0 auto;
+    width: 4.5rem;
+    padding: 0.25rem 0;
+    background: var(--c-primary);
+    border-radius: 100vw;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--c-primary-text);
+    text-align: center;
+}
+
+.workshop-info dd {
+    margin: 0;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 700;
+}
+
+/* 補足はひとまわり小さく、太字にしない */
+.workshop-note {
+    margin-left: 0.5rem;
+    font-size: 0.875em;
+    font-weight: normal;
+}
+
+.workshop-schedule-title,
+.workshop-photos-title {
+    margin: 2.5rem 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.workshop-schedule-note {
+    margin-bottom: 1rem;
+}
+
+/* 開始時刻。最終回の 15:30 まで30分おき */
+.schedule-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.schedule-list li {
+    padding: 0.5rem 1rem;
+    background: var(--c-primary-light);
+    border-radius: 100vw;
+    font-weight: 700;
+    color: var(--c-primary);
+}
+
+/* 終了時刻は開始時刻より控えめに */
+.schedule-end {
+    font-weight: normal;
+}
+
+.workshop-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+.workshop-photos img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2/1;
+    object-fit: cover;
+    border-radius: 0.75rem;
+}
+
+/* ワークショップの流れ。白地の上なので、カードは薄いティールで面を作る */
+.workshop-flow-title {
+    margin: 2.5rem 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.flow-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: none;
+}
+
+.flow-item {
+    padding: 1.5rem;
+    background: var(--c-primary-light);
+    border-radius: 1.25rem;
+}
+
+.flow-step {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 1rem;
+    background: var(--c-primary);
+    border-radius: 100vw;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--c-primary-text);
+    letter-spacing: 0.05em;
+}
+
+.flow-name {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.flow-desc {
+    margin: 0;
+}
+
+/* 流れの説明の中の強調 */
+.flow-desc strong {
+    color: var(--c-primary);
+}
+
+/* ===== フッター ===== */
+footer {
+    padding: 4rem 1.5rem 2rem;
+    background: var(--c-secondary);
+    color: var(--c-secondary-text);
+    text-align: center;
+}
+
+.footer-inner {
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+/* 本体サイトでは白抜きで使うロゴなので、黄色地では黒に落とす。
+   本体の img:not(.swiper-slide) が付ける角丸は文字が欠けるので消す */
+.footer-logo {
+    filter: brightness(0);
+    display: block;
+    width: 40rem;
+    max-width: 100%;
+    margin: 0 auto;
+    border-radius: 0;
+}
+
+.footer-lead {
+    margin: 2rem 0 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.75;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    margin: 2rem 0 0;
+    padding: 0;
+}
+
+.footer-links a {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    background: var(--c-secondary-text);
+    border-radius: 100vw;
+    color: var(--c-secondary);
+    text-decoration: none;
+}
+
+.footer-site {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 2rem;
+    margin: 2rem 0 0;
+    padding: 0;
+}
+
+.footer-copy {
+    margin: 2rem 0 0;
+    font-size: 0.875rem;
+}
+
+footer a {
+    color: inherit;
+}
+
+/* スマホ向けの上書き。
+   .workshop-info のベース定義より後ろに置かないと打ち消せないので、
+   ファイルの最後にまとめている */
+@media (max-width: 767px) {
+
+    /* 対象・場所・日時は横並びだと折り返して読みにくいので縦積みにして中央に揃える */
+    .workshop-info>div {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        text-align: center;
+    }
+
+    .workshop-info dt {
+        width: auto;
+        padding: 0.25rem 1.25rem;
+    }
+}

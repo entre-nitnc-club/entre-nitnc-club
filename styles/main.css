@@ -83,6 +83,51 @@ canvas {
     border-radius: 0.5rem;
 }
 
+.banner {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    overflow: hidden;
+    padding: 0.5rem 0;
+    background: var(--c-primary-color);
+    font-weight: 700;
+    color: var(--c-primary-text);
+    text-decoration: none;
+}
+
+.banner:hover {
+    background: var(--c-primary);
+    text-decoration: none;
+}
+
+.banner .banner-track {
+    display: flex;
+    width: max-content;
+    animation: banner-marquee 30s linear infinite;
+}
+
+.banner .banner-track span {
+    padding: 0 2rem;
+    white-space: nowrap;
+}
+
+@keyframes banner-marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .banner .banner-track {
+        animation: none;
+    }
+}
+
 main {
     flex: 1;
     width: 100%;

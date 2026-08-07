@@ -6,4 +6,10 @@
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
+    <url>
+        <loc>https://entre.nitnc.club/events/oc2026/</loc>
+        <lastmod>2026-08-07</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
 </urlset>

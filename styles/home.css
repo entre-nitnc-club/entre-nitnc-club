@@ -13,6 +13,18 @@ header {
     background-size: cover;
 }
 
+header .header-inner {
+    width: 100%;
+}
+
+header .header-lead {
+    margin-top: 2rem;
+    font-size: 1.5rem;
+    color: #fff;
+    text-align: center;
+    text-shadow: var(--e-text-shadow);
+}
+
 header h1 img {
     filter: brightness(10);
     will-change: filter;
