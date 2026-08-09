@@ -7,11 +7,19 @@
     <title>OC タイムテーブル</title>
     <meta name="robots" content="noindex">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            min-height: 100vh;
+            height: 100%;
+            min-height: 100svh;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-family: sans-serif;
         }
 
         #time {
@@ -38,9 +46,6 @@
             ["15", "40"]
         ];
 
-        const date = new Date();
-        const currentHour = date.getHours();
-        const currentMinute = date.getMinutes();
         function pad(n) { return n.toString().padStart(2, '0'); }
 
         function findNextTime(h, m) {
@@ -68,6 +73,13 @@
 
         // reload the page every hour to ensure the timetable is up to date
         setInterval(() => location.reload(), 60 * 60 * 1000);
+
+        // fullscreen
+        document.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            }
+        });
     </script>
 </body>
 
