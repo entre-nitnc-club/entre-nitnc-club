@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OC タイムテーブル</title>
+    <meta name="robots" content="noindex">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #time {
+            font-size: calc(100vw / 4);
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <p id="time">
+        12:00
+    </p>
+
+    <script>
+        const timetable = [
+            ["12", "10"],
+            ["12", "40"],
+            ["13", "10"],
+            ["13", "40"],
+            ["14", "10"],
+            ["14", "40"],
+            ["15", "10"],
+            ["15", "40"]
+        ];
+
+        const date = new Date();
+        const currentHour = date.getHours();
+        const currentMinute = date.getMinutes();
+        function pad(n) { return n.toString().padStart(2, '0'); }
+
+        function findNextTime(h, m) {
+            for (const [th, tm] of timetable) {
+                const ih = parseInt(th, 10);
+                const im = parseInt(tm, 10);
+                if (ih > h || (ih === h && im > m)) return [ih, im];
+            }
+            // if none left today, return first of next day
+            const [fh, fm] = timetable[0];
+            return [parseInt(fh, 10), parseInt(fm, 10)];
+        }
+
+        function update() {
+            const now = new Date();
+            const h = now.getHours();
+            const m = now.getMinutes();
+            const [nh, nm] = findNextTime(h, m);
+            document.getElementById('time').textContent = pad(nh) + ":" + pad(nm);
+        }
+
+        // initial update and refresh every 15 seconds
+        update();
+        setInterval(update, 15* 1000);
+
+        // reload the page every hour to ensure the timetable is up to date
+        setInterval(() => location.reload(), 60 * 60 * 1000);
+    </script>
+</body>
+
+</html>
