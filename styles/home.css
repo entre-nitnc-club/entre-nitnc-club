@@ -132,3 +132,71 @@ h2 {
 .swiper .swiper-pagination {
     opacity: 0.75;
 }
+/* 紹介カードは2列までにして、部員構成のカードだけ横いっぱいに使う。
+   3列になると5枚目が1枚だけ余るので、列数を固定している */
+#about .cards {
+    grid-template-columns: repeat(auto-fill, minmax(max(min(28rem, 100%), calc((100% - 1rem) / 2)), 1fr));
+}
+
+#about .card.card-wide {
+    grid-column: 1 / -1;
+}
+
+#about .member-total {
+    font-size: 1.25rem;
+}
+
+#about .member-total strong {
+    margin-right: 0.125rem;
+    font-size: 2rem;
+    color: var(--c-primary-color);
+}
+
+/* 学年ごとの人数。本体の main ul li のマーカーと字下げは使わない */
+#about .grade-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+    gap: 0.5rem;
+    text-align: center;
+}
+
+#about .grade-list li {
+    padding: 0.5rem 0.25rem;
+    background: var(--c-primary-light);
+    border-radius: 0.5rem;
+}
+
+#about .grade-list li::before {
+    display: none;
+}
+
+#about .grade-name {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--c-text-light);
+}
+
+#about .grade-count {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--c-primary-color);
+}
+
+/* 顧問は「ラベル: 名前」を横に並べる */
+#about .staff {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--c-text-lightest);
+}
+
+#about .staff>div {
+    display: flex;
+    gap: 0.75rem;
+}
+
+#about .staff dt {
+    color: var(--c-text-light);
+}
