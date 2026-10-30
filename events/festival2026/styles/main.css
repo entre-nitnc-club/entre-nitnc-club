@@ -1,0 +1,462 @@
+/* 看板と同じ赤・白・黒・黄色に揃える。
+   ダークモードでも看板の色のまま見せたいので、上書きはしない */
+:root {
+    --c-background: #ffffff;
+    --c-card-background: var(--c-background);
+
+    --c-text: #000000;
+    --c-text-thin: #333333;
+    --c-text-light: #666666;
+    --c-text-lightest: #cccccc;
+
+    --c-primary: #e60012;
+    --c-primary-color: var(--c-primary);
+    --c-primary-light: #e6001220;
+    --c-primary-text: #ffffff;
+
+    --c-secondary: #ffe100;
+    --c-secondary-text: #000000;
+
+    /* 看板の縁取りの黒。こだわりポイントの面にも使う */
+    --c-dark: #000000;
+    --c-dark-text: #ffffff;
+}
+
+/* 各セクションが自前で余白と背景を持つので、本体の main の余白は消す */
+main {
+    padding: 0;
+    background: var(--c-background);
+}
+
+main section {
+    margin: 0;
+}
+
+body {
+    background: var(--c-primary);
+    /* .full-bleed の 100vw はスクロールバーのぶん横に溢れるので、その分を切る */
+    overflow-x: clip;
+}
+
+/* 背景を画面幅いっぱいに出したいセクションは、本体の main の max-width から外へ逃がす */
+.full-bleed {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+}
+
+/* 本体の main ul li に付く菱形マーカーと字下げは、このページでは使わない */
+main ul,
+main ol,
+footer ul {
+    list-style: none;
+}
+
+main ul li,
+footer ul li {
+    padding-left: 0;
+}
+
+main ul li::before,
+footer ul li::before {
+    display: none;
+}
+
+main p,
+main h2,
+main h3 {
+    margin-top: 0;
+}
+
+/* ===== ヘッダー ===== */
+header {
+    padding: 5rem 1.5rem 4rem;
+    background: var(--c-primary);
+    color: var(--c-primary-text);
+    text-align: center;
+}
+
+.hero {
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+.hero-lead {
+    margin: 0;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+}
+
+/* 看板の文字に寄せて、黄色に太い黒の縁取りで見せる */
+.hero-title {
+    margin: 0.5rem 0 0;
+    font-size: clamp(2.5rem, 9vw, 6rem);
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.hero-title-main {
+    color: var(--c-secondary);
+    -webkit-text-stroke: 0.12em var(--c-dark);
+    paint-order: stroke fill;
+}
+
+.hero-dates {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem 3rem;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.hero-dates li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hero-date {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* 曜日は丸囲み */
+.hero-day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.hero-both {
+    display: inline-block;
+    margin: 2rem 0 0;
+    padding: 0.5rem 2rem;
+    background: var(--c-secondary);
+    border-radius: 100vw;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--c-secondary-text);
+}
+
+/* ===== メニュー ===== */
+#menu {
+    padding: 4rem 1.5rem;
+    background: var(--c-secondary);
+}
+
+.menu-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
+    align-items: center;
+    gap: 2rem;
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+.menu-shop {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* 看板の「じゃがバター」と同じ、赤に白の縁取り */
+.menu-name {
+    color: var(--c-primary);
+    -webkit-text-stroke: 0.15em #ffffff;
+    paint-order: stroke fill;
+}
+
+.menu-name {
+    margin: 0.25rem 0 0;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.menu-catch {
+    margin: 1rem 0 0;
+    font-size: 1.125rem;
+}
+
+.menu-price {
+    display: inline-block;
+    margin: 1.5rem 0 0;
+    padding: 0.25rem 2rem;
+    background: var(--c-primary);
+    border: 0.25rem solid #ffffff;
+    border-radius: 1rem;
+    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.4;
+    color: #ffffff;
+}
+
+.menu-price-unit {
+    font-size: 0.6em;
+}
+
+.menu-sign {
+    display: block;
+    width: 100%;
+    border-radius: 0.75rem;
+}
+
+/* ===== 導入 ===== */
+#intro {
+    padding: 4rem 1.5rem 0;
+    background: var(--c-dark);
+    color: var(--c-dark-text);
+    text-align: center;
+}
+
+.intro-inner {
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+.intro-question {
+    margin-bottom: 0.5rem;
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 700;
+}
+
+.intro-inner strong {
+    color: var(--c-secondary);
+}
+
+/* ===== こだわりポイント ===== */
+#points {
+    padding: 3rem 1.5rem 4rem;
+    background: var(--c-dark);
+}
+
+.section-title {
+    max-width: 64rem;
+    margin: 0 auto 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--c-secondary);
+    text-align: center;
+}
+
+.point-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+    gap: 1.5rem;
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.point-item {
+    padding: 1.5rem;
+    background: var(--c-card-background);
+    border-radius: 1.25rem;
+    box-shadow: 0.5rem 0.5rem 0 var(--c-secondary);
+}
+
+.point-num {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 1rem;
+    background: var(--c-primary);
+    border-radius: 100vw;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--c-primary-text);
+    letter-spacing: 0.05em;
+}
+
+.point-name {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--c-primary);
+}
+
+.point-desc {
+    margin: 0;
+}
+
+/* ===== 出店情報 ===== */
+#info {
+    padding: 3rem 1.5rem;
+    background: var(--c-background);
+}
+
+.info-inner {
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+/* 見出しの黄色いラインはOC特設ページと同じ画像を使う */
+.info-title {
+    margin: 0 0 1.5rem;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 700;
+}
+
+.info-title span {
+    background-image: url("/events/oc2026/images/highlight.svg");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-size: 100% 0.4em;
+    padding-bottom: 0.15em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+/* ラベルは幅を揃えて縦のラインを通す */
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.info-list>div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+}
+
+.info-list dt {
+    flex: 0 0 auto;
+    width: 6rem;
+    padding: 0.25rem 0;
+    background: var(--c-primary);
+    border-radius: 100vw;
+    font-weight: 700;
+    color: var(--c-primary-text);
+    text-align: center;
+}
+
+.info-list dd {
+    margin: 0;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 700;
+}
+
+.info-note {
+    margin-left: 0.5rem;
+    font-size: 0.875em;
+    font-weight: normal;
+}
+
+.info-message {
+    margin: 2rem 0 0;
+}
+
+.posts-title {
+    margin: 2.5rem 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(11rem, 100%), 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+.posts img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    border-radius: 0.75rem;
+}
+
+.posts-note {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    color: var(--c-text-light);
+    text-align: right;
+}
+
+/* ===== フッター ===== */
+footer {
+    padding: 4rem 1.5rem 2rem;
+    background: var(--c-secondary);
+    color: var(--c-secondary-text);
+    text-align: center;
+}
+
+.footer-inner {
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+/* 本体サイトでは白抜きで使うロゴなので、黄色地では黒に落とす */
+.footer-logo {
+    filter: brightness(0);
+    display: block;
+    width: 40rem;
+    max-width: 100%;
+    margin: 0 auto;
+    border-radius: 0;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    margin: 2rem 0 0;
+    padding: 0;
+}
+
+.footer-links a {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    background: var(--c-secondary-text);
+    border-radius: 100vw;
+    color: var(--c-secondary);
+    text-decoration: none;
+}
+
+.footer-site {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 2rem;
+    margin: 2rem 0 0;
+    padding: 0;
+}
+
+.footer-copy {
+    margin: 2rem 0 0;
+    font-size: 0.875rem;
+}
+
+footer a {
+    color: inherit;
+}
+
+/* スマホでは出店情報のラベルを縦積みにして中央に揃える */
+@media (max-width: 767px) {
+    .info-list>div {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        text-align: center;
+    }
+
+    .info-list dt {
+        width: auto;
+        padding: 0.25rem 1.25rem;
+    }
+}
